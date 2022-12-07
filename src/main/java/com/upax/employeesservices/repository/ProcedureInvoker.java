@@ -56,7 +56,7 @@ public class ProcedureInvoker {
         }
     }
 
-    public EmployeesEntityResponse findEmpByJob(FindEmployeeByJobRequest empByJob){
+    public List<FindEmployeeByJobResponse> findEmpByJob(FindEmployeeByJobRequest empByJob){
             /*StoredProcedureQuery storedProcedureQuery = entityManager.createStoredProcedureQuery("SCHEMPLOYEES.PAEMPLOYEES.FNFINDEMPBYJOB");
 
             storedProcedureQuery.registerStoredProcedureParameter(1, Integer.class, ParameterMode.IN);
@@ -98,6 +98,96 @@ public class ProcedureInvoker {
             EmployeesEntityResponse eer = new EmployeesEntityResponse();
             eer.setId(Integer.valueOf(0));
             eer.setSuccess(Boolean.valueOf(false));
-            return eer;
+            return response;
+    }
+
+    public EmployeeHrsWorkdResponse findHrsWorkd(EmployeeHrsWordRequest employeeHrsWordRequest){
+        StoredProcedureQuery storedProcedureQuery = entityManager.createStoredProcedureQuery("SCHEMPLOYEES.PAEMPLOYEES.SPHRSXEMP");
+
+        storedProcedureQuery.registerStoredProcedureParameter("EMPID", Integer.class, ParameterMode.IN);
+        storedProcedureQuery.registerStoredProcedureParameter("FECINICIAL", String.class, ParameterMode.IN);
+        storedProcedureQuery.registerStoredProcedureParameter("FECFINAL", String.class, ParameterMode.IN);
+        storedProcedureQuery.registerStoredProcedureParameter("HRSWORKD", Integer.class, ParameterMode.OUT);
+        storedProcedureQuery.registerStoredProcedureParameter("RPS", String.class, ParameterMode.OUT);
+        storedProcedureQuery.registerStoredProcedureParameter("MSG", String.class, ParameterMode.OUT);
+
+        storedProcedureQuery.setParameter("EMPID", employeeHrsWordRequest.getEmployee_id())
+                .setParameter("FECINICIAL",employeeHrsWordRequest.getStart_date())
+                .setParameter("FECFINAL", employeeHrsWordRequest.getEnd_date())
+                .execute();
+        Integer hrsWork = (Integer) storedProcedureQuery.getOutputParameterValue("HRSWORKD");
+        final String rps = (String) storedProcedureQuery.getOutputParameterValue("RPS");
+        final String opMSG = (String) storedProcedureQuery.getOutputParameterValue("MSG");
+
+        EmployeeHrsWorkdResponse ehwr = new EmployeeHrsWorkdResponse();
+        if(hrsWork == 0){
+            hrsWork = null;
+        }
+        ehwr.setTotal_worked_hours(hrsWork);
+        ehwr.setSuccess(Boolean.valueOf(rps));
+        return ehwr;
+    }
+
+    public EmployeeSalaryResponse findSalary(EmployeeSalaryRequest employeeSalaryRequest){
+        StoredProcedureQuery storedProcedureQuery = entityManager.createStoredProcedureQuery("SCHEMPLOYEES.PAEMPLOYEES.SPSALARYXEMP");
+
+        storedProcedureQuery.registerStoredProcedureParameter("EMPID", Integer.class, ParameterMode.IN);
+        storedProcedureQuery.registerStoredProcedureParameter("FECINICIAL", String.class, ParameterMode.IN);
+        storedProcedureQuery.registerStoredProcedureParameter("FECFINAL", String.class, ParameterMode.IN);
+        storedProcedureQuery.registerStoredProcedureParameter("SALEMP", Integer.class, ParameterMode.OUT);
+        storedProcedureQuery.registerStoredProcedureParameter("RPS", String.class, ParameterMode.OUT);
+        storedProcedureQuery.registerStoredProcedureParameter("MSG", String.class, ParameterMode.OUT);
+
+        storedProcedureQuery.setParameter("EMPID", employeeSalaryRequest.getEmployee_id())
+                .setParameter("FECINICIAL",employeeSalaryRequest.getStart_date())
+                .setParameter("FECFINAL", employeeSalaryRequest.getEnd_date())
+                .execute();
+        Integer salary = (Integer) storedProcedureQuery.getOutputParameterValue("SALEMP");
+        final String rps = (String) storedProcedureQuery.getOutputParameterValue("RPS");
+        final String opMSG = (String) storedProcedureQuery.getOutputParameterValue("MSG");
+
+        EmployeeSalaryResponse esr = new EmployeeSalaryResponse();
+        if(salary == 0){
+            salary = null;
+        }
+        esr.setPayment(salary);
+        esr.setSuccess(Boolean.valueOf(rps));
+        return esr;
+    }
+
+    public EmployeeEntity findEmployees(EmployeeByDates employeesRequest){
+
+        StoredProcedureQuery storedProcedureQuery = entityManager.createStoredProcedureQuery("SCHEMPLOYEES.PAEMPLOYEES.SPFINDEMPBYDATE");
+
+        storedProcedureQuery.registerStoredProcedureParameter("EMPID", Integer.class, ParameterMode.IN);
+        storedProcedureQuery.registerStoredProcedureParameter("FECINICIAL", String.class, ParameterMode.IN);
+        storedProcedureQuery.registerStoredProcedureParameter("FECFINAL", String.class, ParameterMode.IN);
+        storedProcedureQuery.registerStoredProcedureParameter("GENDERID", Integer.class, ParameterMode.OUT);
+        storedProcedureQuery.registerStoredProcedureParameter("JOBID", Integer.class, ParameterMode.OUT);
+        storedProcedureQuery.registerStoredProcedureParameter("NAME", String.class, ParameterMode.OUT);
+        storedProcedureQuery.registerStoredProcedureParameter("LAST_NAME", String.class, ParameterMode.OUT);
+        storedProcedureQuery.registerStoredProcedureParameter("BIRTHDATE", String.class, ParameterMode.OUT);
+        storedProcedureQuery.registerStoredProcedureParameter("RSP", String.class, ParameterMode.OUT);
+        storedProcedureQuery.registerStoredProcedureParameter("MSG", String.class, ParameterMode.OUT);
+
+        storedProcedureQuery.setParameter("EMPID", employeesRequest.getEmployee_id())
+                .setParameter("FECINICIAL",employeesRequest.getStart_date())
+                .setParameter("FECFINAL", employeesRequest.getEnd_date())
+                .execute();
+        Integer gender = (Integer) storedProcedureQuery.getOutputParameterValue("GENDERID");
+        Integer job = (Integer) storedProcedureQuery.getOutputParameterValue("JOBID");
+        final String name = (String) storedProcedureQuery.getOutputParameterValue("NAME");
+        final String lastname = (String) storedProcedureQuery.getOutputParameterValue("LAST_NAME");
+        final String birthdate = (String) storedProcedureQuery.getOutputParameterValue("BIRTHDATE");
+        final String rps = (String) storedProcedureQuery.getOutputParameterValue("RSP");
+        final String opMSG = (String) storedProcedureQuery.getOutputParameterValue("MSG");
+
+        EmployeeEntity ee = new EmployeeEntity();
+        ee.setGender_id(gender);
+        ee.setJob_id(job);
+        ee.setBirthdate(birthdate);
+        ee.setName(name);
+        ee.setLast_name(lastname);
+        return ee;
     }
 }

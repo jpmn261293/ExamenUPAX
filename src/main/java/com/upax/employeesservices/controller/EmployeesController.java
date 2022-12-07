@@ -1,8 +1,6 @@
 package com.upax.employeesservices.controller;
 
-import com.upax.employeesservices.domain.entity.EmployeesEntityRequest;
-import com.upax.employeesservices.domain.entity.EmployeesEntityResponse;
-import com.upax.employeesservices.domain.entity.FindEmployeeByJobRequest;
+import com.upax.employeesservices.domain.entity.*;
 import com.upax.employeesservices.service.EmployeeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -17,9 +15,9 @@ public class EmployeesController {
     private EmployeeService employeeService;
 
     @PostMapping("/byJob")
-    public List<EmployeesEntityResponse> findEmpByJob(@RequestBody FindEmployeeByJobRequest empByJob){
-        employeeService.findByJob(empByJob);
-        return null;
+    public List<FindEmployeeByJobResponse> findEmpByJob(@RequestBody FindEmployeeByJobRequest empByJob){
+        List<FindEmployeeByJobResponse> response = employeeService.findByJob(empByJob);
+        return response;
     }
 
     @PostMapping("/addEmployee")
@@ -29,5 +27,26 @@ public class EmployeesController {
         eer = employeeService.save(employeesEntityRequest);
 
         return eer;
+    }
+
+    @PostMapping("/findHW")
+    public EmployeeHrsWorkdResponse findHrsWorkd(@RequestBody EmployeeHrsWordRequest employeeHrsWordRequest){
+        EmployeeHrsWorkdResponse ehwr = new EmployeeHrsWorkdResponse();
+        ehwr = employeeService.findHrsWorkd(employeeHrsWordRequest);
+        return ehwr;
+    }
+
+    @PostMapping("/findSalary")
+    public EmployeeSalaryResponse findSalary(@RequestBody EmployeeSalaryRequest employeeSalaryRequest){
+        EmployeeSalaryResponse esr = new EmployeeSalaryResponse();
+        esr = employeeService.findSalary(employeeSalaryRequest);
+        return esr;
+    }
+
+    @PostMapping("/findEmployees")
+    public EmployeesResponse findEmployees(@RequestBody EmployeesRequest employeesRequest){
+        EmployeesResponse er = new EmployeesResponse();
+        er = employeeService.findEmployees(employeesRequest);
+        return er;
     }
 }
